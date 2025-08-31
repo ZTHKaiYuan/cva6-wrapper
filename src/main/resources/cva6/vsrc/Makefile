@@ -145,8 +145,8 @@ $(PREPROC_VERILOG): $(ALL_VSRCS)
 	$(foreach def,$(PREPROC_DEFINES),echo "\`define $(def)" >> def.v; )
 	$(foreach def,$(PREPROC_DEFINES),echo "\`undef $(def)" >> undef.v; )
 	cat def.v $(ALL_VSRCS) undef.v > combined.sv
-	sed -i '/l15.tmp.h/d' combined.sv
-	sed -i '/define.tmp.h/d' combined.sv
+	# Remove problematic temporary include lines in a portable way (no in-place sed)
+	sed -e '/l15.tmp.h/d' -e '/define.tmp.h/d' combined.sv > combined.sv.stripped && mv combined.sv.stripped combined.sv
 	$(PREPROC_SCRIPT) combined.sv $@ $(INC_DIRS)
 	rm -rf combined.sv def.v undef.v
 
